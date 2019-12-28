@@ -18,29 +18,39 @@ fn main() {
         color: Color::from_tuple_rgb((255, 63, 127))
     };
     let sphere2 = Sphere {
-        center: Vector::new(1.0, 1.0, -8.0),
+        center: Vector::new(5.0, 1.0, -8.0),
         radius: 1.5,
-        color: Color::from_tuple_rgb((127, 255, 0))
+        color: Color::from_tuple_rgb((0, 255, 0))
     };
     let sphere3 = Sphere {
-        center: Vector::new(-1.0, 3.0, -5.0),
+        center: Vector::new(-1.0, 3.0, -10.0),
         radius: 2.0,
-        color: Color::from_tuple_rgb((63, 255, 127))
+        color: Color::from_tuple_rgb((255, 63, 255))
     };
     let plane = Plane {
-        p0: Vector::new(0.0, -5.0, 0.0),
+        p0: Vector::new(0.0, -1.0, 0.0),
         normal: Vector::new(0.0, 1.0, 0.0),
-        color: Color::from_tuple_rgb((127, 127, 127))
+        color: Color::from_tuple_rgb((255, 255, 255))
     };
     let light1 = Light {
-        direction: Vector::new(0.0, -1.0, 0.0),
+        direction: Vector::new(0.0, -5.0, 0.0),
         color: Color::from_tuple_rgb((255, 255, 255)),
-        intensity: 0.5 as f32
+        intensity: 0.9 as f32
     };
     let light2 = Light {
         direction: Vector::new(1.0, -1.0, 0.0),
         color: Color::from_tuple_rgb((255, 127, 63)),
         intensity: 0.7 as f32
+    };
+    let light3 = Light {
+        direction: Vector::new(0.0, 1.0, 0.0),
+        color: Color::from_tuple_rgb((127, 0, 255)),
+        intensity: 1 as f32
+    };
+    let light4 = Light {
+        direction: Vector::new(-1.0, 0.0, 0.0),
+        color: Color::from_tuple_rgb((63, 127, 63)),
+        intensity: 0.4
     };
     let mut element_vector = vec![
         Element::Sphere(sphere1),
@@ -50,7 +60,9 @@ fn main() {
     ];
     let mut light_vector = vec![
         light1,
-        //light2
+        light2,
+        light3,
+        light4
     ];
     let mut frame = Frame {
         dimentions: (800, 600),
@@ -63,3 +75,11 @@ fn main() {
     let image = frame.render();
     image.save("trace.png");
 }
+/*
+fn main() {
+    let c1 = Color::new(1.0, 1.0, 1.0);
+    let c2 = Color::new(0.0, 1.0, 0.5);
+    let c3 = c1.mul_c(&c2);
+    println!("{} {} {}", c3.red, c3.green, c3.blue);
+}
+*/

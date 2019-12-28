@@ -25,8 +25,8 @@ impl Color {
     pub fn from_tuple_rgb(t: (u32, u32, u32)) -> Color {
         Color{
             red: (t.0 / 255) as f32,
-            green: (t.2 / 255) as f32,
-            blue: (t.1 / 255) as f32
+            green: (t.1 / 255) as f32,
+            blue: (t.2 / 255) as f32
         }
     }
     pub fn to_rgba(&self) -> Rgba<u8> {
@@ -42,6 +42,13 @@ impl Color {
             red: self.red.min(1.0).max(0.0),
             green: self.green.min(1.0).max(0.0),
             blue: self.blue.min(1.0).max(0.0)
+        }
+    }
+    pub fn modulo(&self, d: f32) -> Color {
+        Color {
+            red: self.red % d,
+            green: self.green % d,
+            blue: self.blue % d
         }
     }
     pub fn mul_c(&self, c: &Color) -> Color {

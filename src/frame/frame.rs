@@ -41,20 +41,16 @@ impl Frame {
     //https://bheisler.github.io/post/writing-raytracer-in-rust-part-1/
     pub fn render(&self) -> DynamicImage {
         let mut image = DynamicImage::new_rgb8(self.width, self.height);
-        let black = Rgba::from_channels(0, 0, 0, 0);
+        let background = Color::from_tuple_rgb((200, 200, 200));
         for x in 0..self.width {
             for y in 0..self.height {
                 let ray = self.create_ray(x, y);
                 let intersection = self.trace(&ray);
                 let color = match intersection {
                     Some(inter) => self.get_color(&ray, &inter),
-                    None => Color{
-                        red: 0.0 as f32,
-                        green: 0.0 as f32,
-                        blue: 0.0 as f32
-                    }
+                    None => background
                 };
-                image.put_pixel(x, y, color.to_rgba())
+                image.put_pixel(x, y, color.to_rgba());
             }
         }
         image
@@ -63,18 +59,25 @@ impl Frame {
     pub fn get_color(&self, ray: &Ray, intersection: &Intersection) -> Color {
         let hit_point = ray.origin.add(&ray.direction.mul(intersection.distance));
         let surface_normal = intersection.element.surface_normal(&hit_point);
-        let mut color = Color::new(1.0 as f32, 1.0 as f32, 1.0 as f32);
+        let mut color = Color::new(0.0 as f32, 0.0 as f32, 0.0 as f32);
         for light in self.light.iter() {
+            /*
             let c = {
                 let direction_to_light = light.direction.unit().mul(-1 as f64);
                 let light_power = (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light.intensity.min(1.0);
                 let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
                 let color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
-                color.clamp()
+                //color.clamp()
+                color.modulo(1.0)
             };
-            let color = color.mul_c(&c);
+            */
+            let direction_to_light = light.direction.unit().mul(-1 as f64);
+            let light_power = (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light.intensity.min(1.0);
+            let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
+            let light_color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
+            color = color + light_color;
         }
-        color
+        color.clamp()
     }
     pub fn trace(&self, ray: &Ray) -> Option<Intersection> {
         self.elements

@@ -26,6 +26,6 @@ impl Intersect for Plane {
         self.normal
     }
     fn albedo(&self) -> f32 {
-        1 as f32
+        0.3 as f32
     }
 }
