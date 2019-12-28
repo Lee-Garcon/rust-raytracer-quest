@@ -16,7 +16,8 @@ pub struct Frame {
     pub height: u32,
     pub fov: f64,
     pub elements: Vec<Element>,
-    pub light: Vec<Light>
+    pub light: Vec<Light>,
+    pub background: Color
 }
 
 //Based on https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/
@@ -41,14 +42,13 @@ impl Frame {
     //https://bheisler.github.io/post/writing-raytracer-in-rust-part-1/
     pub fn render(&self) -> DynamicImage {
         let mut image = DynamicImage::new_rgb8(self.width, self.height);
-        let background = Color::from_tuple_rgb((200, 200, 200));
         for x in 0..self.width {
             for y in 0..self.height {
                 let ray = self.create_ray(x, y);
                 let intersection = self.trace(&ray);
                 let color = match intersection {
                     Some(inter) => self.get_color(&ray, &inter),
-                    None => background
+                    None => self.background
                 };
                 image.put_pixel(x, y, color.to_rgba());
             }
@@ -71,7 +71,7 @@ impl Frame {
                 color.modulo(1.0)
             };
             */
-            let direction_to_light = light.direction.unit().mul(-1 as f64);
+            let direction_to_light = light.direction.unit();//.mul(-1 as f64);
             let light_power = (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light.intensity.min(1.0);
             let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
             let light_color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
