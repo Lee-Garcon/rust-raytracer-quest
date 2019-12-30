@@ -36,6 +36,6 @@ impl Intersect for Sphere {
         hit_point.mul(-1 as f64)
     }
     fn albedo(&self) -> f32 {
-        0.2 as f32
+        1 as f32
     }
 }

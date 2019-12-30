@@ -18,7 +18,8 @@ pub struct Frame {
     pub elements: Vec<Element>,
     pub light: Vec<Light>,
     pub background: Color,
-    pub smudge: f64
+    pub smudge: f64,
+    pub max_recursion_depth: u32
 }
 
 //Based on https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/
@@ -66,7 +67,7 @@ impl Frame {
         let hit_point = ray.origin.add(&ray.direction.mul(intersection.distance));
         let surface_normal = intersection.element.surface_normal(&hit_point);
         let mut color = Color::new(0.0 as f32, 0.0 as f32, 0.0 as f32);
-        for light in self.light.iter() {
+        for light_enum in self.light.iter() {
             /*
             let c = {
                 let direction_to_light = light.direction.unit().mul(-1 as f64);
@@ -77,7 +78,44 @@ impl Frame {
                 color.modulo(1.0)
             };
             */
+            match light_enum {
+                Light::DirectionalLight(light) => {
+                    let direction_to_light = light.direction.unit();//.mul(-1 as f64);
+                    //https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/
 
+
+                    let shadow_ray = Ray {
+                        origin: hit_point.add(&surface_normal.mul(self.smudge)),
+                        direction: direction_to_light,
+                    };
+                    let in_light = self.trace(&shadow_ray).is_none();
+                    let light_intensity = if in_light { light.intensity } else { 0.0 };
+
+
+                    //let light_intensity = light.intensity;
+
+                    let light_power = (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light_intensity;
+                    let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
+                    let light_color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
+                    color = color + light_color;
+                },
+                Light::SphericalLight(light) => {
+                    let direction_to_light = light.center.sub(&hit_point);
+                    let light_intensity = light.intensity / (4.0 * std::f64::consts::PI * direction_to_light.magnitude().powi(2)) as f32;
+                    let shadow_ray = Ray {
+                        origin: hit_point.add(&surface_normal.mul(self.smudge)),
+                        direction: direction_to_light.unit(),
+                    };
+                    let shadow_intersection = self.trace(&shadow_ray);
+                    let in_light = shadow_intersection.is_none() ||
+                        shadow_intersection.unwrap().distance > light.center.sub(&hit_point).magnitude();
+                    let light_power = (surface_normal.dot(&direction_to_light) as f32).max(0.0) * light_intensity;
+                    let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
+                    let light_color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
+                    color = color + light_color;
+                }
+            }
+            /*
             let direction_to_light = light.direction.unit();//.mul(-1 as f64);
             //https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/
 
@@ -96,6 +134,7 @@ impl Frame {
             let light_reflected = intersection.element.albedo() / std::f32::consts::PI;
             let light_color = intersection.element.color().mul_c(&light.color).mul_s(light_power).mul_s(light_reflected);
             color = color + light_color;
+            */
         }
         color.clamp()
     }

@@ -4,6 +4,8 @@ use self::frame::objects::assets::primitives::vector::Vector;
 use self::frame::objects::assets::primitives::color::Color;
 use self::frame::frame::Frame;
 use self::frame::objects::element::Element;
+use self::frame::objects::assets::light::DirectionalLight;
+use self::frame::objects::assets::light::SphericalLight;
 use self::frame::objects::assets::light::Light;
 use self::frame::objects::assets::plane::Plane;
 use self::frame::objects::assets::sphere::Sphere;
@@ -38,17 +40,22 @@ fn main() {
         color: Color::from_tuple_rgb((0, 255, 255))
     };
 
-    let light1 = Light {
+    let light1 = Light::DirectionalLight(DirectionalLight {
         direction: Vector::new(-2.0, -1.0, 1.0),
         color: Color::from_tuple_rgb((255, 255, 255)),
         intensity: 0.7
-    };
+    });
 
-    let light2 = Light {
+    let light2 = Light::DirectionalLight(DirectionalLight {
         direction: Vector::new(2.0, -1.0, 1.0),
         color: Color::from_tuple_rgb((255, 255, 255)),
         intensity: 0.7
-    };
+    });
+    let light3 = Light::SphericalLight(SphericalLight {
+        center: Vector::new(-0.5, -1.0, -2.0),
+        color: Color::from_tuple_rgb((255, 255, 255)),
+        intensity: 5.0
+    });
     /*
     let light3 = Light {
         direction: Vector::new(0.0, -1.0, 1.0),
@@ -60,13 +67,15 @@ fn main() {
         Element::Sphere(sphere1),
         Element::Sphere(sphere2),
         Element::Sphere(sphere3),
+        //Element::Plane(plane2)
     ];
     let mut light_vector = vec![
         light1,
-        light2
+        //light2,
+        light3
     ];
 
-    let background = Color::from_tuple_rgb((173, 216, 230));
+    let background = Color::from_tuple_rgb((63, 63, 63));
 
     let mut frame = Frame {
         dimentions: (1920, 1080),
