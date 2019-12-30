@@ -13,7 +13,7 @@ impl Intersect for Plane {
     fn intersect(&self, ray: &Ray) -> Option<f64> {
         let normal = &self.normal;
         let denom = normal.dot(&ray.direction);
-        if denom > 1e-6 {
+        if denom.abs() > 1e-6 {
             let v = self.p0.sub(&ray.origin);
             let distance = v.dot(&normal) / denom;
             if distance >= 0.0 {

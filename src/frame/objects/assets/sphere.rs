@@ -21,11 +21,16 @@ impl Intersect for Sphere {
         let thc = (radius2 - d2).sqrt();
         let t0 = adj - thc;
         let t1 = adj + thc;
-        if t0 < 0.0 && t1 < 0.0 {
+        if t0 <= 0.0 && t1 <= 0.0 {
             return None;
+        } else if t0 <= 0.0 {
+            Some(t1)
+        } else if t1 <= 0.0 {
+            Some(t0)
+        } else {
+            let distance = if t0 < t1 { t0 } else { t1 };
+            Some(distance)
         }
-        let distance = if t0 < t1 { t0 } else { t1 };
-        Some(distance)
     }
     fn surface_normal(&self, hit_point: &Vector) -> Vector {
         hit_point.mul(-1 as f64)

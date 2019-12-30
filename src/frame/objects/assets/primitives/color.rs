@@ -65,6 +65,15 @@ impl Color {
             blue: self.blue * s
         }
     }
+    pub fn values(&self) -> (f32, f32, f32) {
+        (self.red, self.green, self.blue)
+    }
+
+    //Debug purposes
+    pub fn debug(&self) {
+        let (red, green, blue) = self.values();
+        println!("{}, {}, {}", red*(255 as f32), green*(255 as f32), blue*(255 as f32));
+    }
 }
 //https://github.com/bheisler/raytracer/blob/master/src/scene.rs
 impl Mul for Color {

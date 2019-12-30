@@ -19,6 +19,12 @@ impl Element {
             Element::Sphere(ref s) => s.color
         }
     }
+    pub fn debug(&self){
+        match *self {
+            Element::Plane(ref p) => println!("I'm a fucking plane at {}", p.p0.display()),
+            Element::Sphere(ref s) => println!("I'm a fucking sphere at {}", s.center.display())
+        }
+    }
 }
 
 // https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/
