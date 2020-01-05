@@ -85,7 +85,8 @@ fn main() {
         elements: element_vector,
         light: light_vector,
         background: background,
-        smudge: 1e-12
+        smudge: 1e-12,
+	max_recursion_depth: 10
     };
 
     let image = frame.render();
